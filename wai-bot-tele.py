@@ -59,7 +59,7 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     except Exception as e:
         Logger.error(f"Error in /start command: {e}")
-        await update.message.reply_text("An error occurred while starting the bot.")
+        await update.message.reply_text("⚠️ An error occurred while starting the bot.")
 
 @authorized
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -70,7 +70,7 @@ async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(help_text, parse_mode="Markdown")
     except Exception as e:
         Logger.error(f"Error in /help command: {e}")
-        await update.message.reply_text("An error occurred while displaying help.")
+        await update.message.reply_text("⚠️ An error occurred while displaying help.")
 
 @authorized
 async def cmd_reload(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -79,7 +79,7 @@ async def cmd_reload(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Reloaded {count} plugins.")
     except Exception as e:
         Logger.error(f"Error reloading plugins: {e}")
-        await update.message.reply_text("Failed to reload plugins.")
+        await update.message.reply_text("⚠️ Failed to reload plugins.")
 
 def main():
     try:

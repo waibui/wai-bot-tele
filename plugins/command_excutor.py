@@ -39,4 +39,4 @@ async def cmd_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"```\n{output}\n```", parse_mode="Markdown")
 
     except Exception as e:
-        await update.message.reply_text(f"An error occurred while executing the command: {str(e)}")
+        await update.message.reply_text(f"⚠️ An error occurred while executing the command: {str(e)}")

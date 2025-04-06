@@ -33,7 +33,7 @@ async def cmd_uploadfile(update: Update, context: ContextTypes.DEFAULT_TYPE):
     file_path = " ".join(context.args)
 
     if not os.path.exists(file_path):
-        await update.message.reply_text(f"File not found: {file_path}")
+        await update.message.reply_text(f"⚠️ File not found: {file_path}")
         return
 
     try:
@@ -44,4 +44,4 @@ async def cmd_uploadfile(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 filename=os.path.basename(file_path)
             )
     except Exception as e:
-        await update.message.reply_text(f"An error occurred while uploading the file: {str(e)}")
+        await update.message.reply_text(f"⚠️ An error occurred while uploading the file: {str(e)}")
