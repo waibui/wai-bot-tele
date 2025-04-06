@@ -64,7 +64,10 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 @authorized
 async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        await update.message.reply_text(plugin_manager.get_help(), parse_mode="Markdown")
+        help_text = plugin_manager.get_help()
+        help_text = help_text.replace("*", "\*").replace("_", "\_").replace("[", "\[").replace("]", "\]").replace("(", "\(").replace(")", "\)")
+
+        await update.message.reply_text(help_text, parse_mode="Markdown")
     except Exception as e:
         Logger.error(f"Error in /help command: {e}")
         await update.message.reply_text("An error occurred while displaying help.")
