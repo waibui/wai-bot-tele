@@ -21,6 +21,7 @@
 #  SOFTWARE.
 
 import sys
+import asyncio
 sys.dont_write_bytecode = True
 
 try:
@@ -47,6 +48,7 @@ except Exception as e:
     sys.exit(1)
 
 plugin_manager = PluginManager()
+shutdown_signal = asyncio.Event()
 
 @authorized
 async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -80,8 +82,21 @@ async def cmd_reload(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         Logger.error(f"Error reloading plugins: {e}")
         await update.message.reply_text("⚠️ Failed to reload plugins.")
-
-def main():
+        
+@authorized
+async def cmd_shutdown(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    try:
+        await update.message.reply_text("Shutting down the bot...")
+        Logger.info("Bot shutdown initiated.")
+        
+        shutdown_signal.set()
+        await context.application.stop()
+        
+    except Exception as e:
+        Logger.error(f"Error in /shutdown command: {e}")
+        await update.message.reply_text("⚠️ Failed to shut down the bot.")
+        
+async def main():
     try:
         token = os.getenv("TELEGRAM_BOT_TOKEN")
         if not token:
@@ -91,6 +106,7 @@ def main():
         app.add_handler(CommandHandler("start", cmd_start))
         app.add_handler(CommandHandler("help", cmd_help))
         app.add_handler(CommandHandler("reload", cmd_reload))
+        app.add_handler(CommandHandler("shutdown", cmd_shutdown))
 
         try:
             for handler in plugin_manager.get_handlers():
@@ -99,14 +115,23 @@ def main():
             Logger.error(f"Failed to load plugin handlers: {e}")
 
         Logger.info("Bot started successfully. Listening for commands...")
-        app.run_polling()
-
+        
+        await app.initialize()
+        await app.start()
+        await app.updater.start_polling()
+        
+        await shutdown_signal.wait()
+        
+        Logger.info("Performing clean shutdown...")
+        await app.updater.stop()
+        await app.stop()
+        await app.shutdown()
+        
     except KeyboardInterrupt:
         Logger.warning("[!] Keyboard Interrupt detected!")
-        sys.exit(0)
     except Exception as e:
         Logger.error(f"Unhandled exception in main(): {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

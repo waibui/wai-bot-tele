@@ -88,6 +88,7 @@ class PluginManager:
         help_text = ["# Available Command:"]
         help_text.append("/help - Show this message")
         help_text.append("/reload - Reload plugins")
+        help_text.append("/shutdown - Bot shutdown")
         help_text.extend([f"/{cmd} - {desc.splitlines()[0]}" for cmd, desc in self.help_texts.items()])
         
         return "\n".join(help_text)
